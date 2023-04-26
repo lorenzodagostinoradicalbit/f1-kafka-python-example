@@ -26,7 +26,7 @@ class Data:
         logger.info(f"Reading from file: {path_to_file}")
         try:
             stream_env = os.environ.get("STREAM_DATA", "False")
-            stream_flag = stream_env.lower in ("true", "1", "t") # Allow values like True, true, 1, ...
+            stream_flag = stream_env.lower() in ("true", "1", "t") # Allow values like True, true, 1, ...
             open_mode = "rb" if stream_flag else "r"
             with open(path_to_file, open_mode) as f:
                 if not stream_flag:
@@ -36,11 +36,12 @@ class Data:
                     logger.info("done parsing file")
                 for data in _data:
                     self.data.set(data)
-                    sleep(1)
+                    sleep(0.05)
                     if self.stop_sig.value:
                         logger.info("stopped")
                         break
         except Exception as e:
+            logger.info("There was an error")
             logger.info(e)
             return -1
         self.stop_sig.set(False)
