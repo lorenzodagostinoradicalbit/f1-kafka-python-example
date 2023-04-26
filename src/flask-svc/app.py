@@ -14,10 +14,14 @@ class Data:
         self.init_data = {"data": None}
         self.data = Manager().Value(object, self.init_data)
         self.stop_sig = Manager().Value(ctypes.c_bool, False)
+        self._status = Manager().Value(str, "Idle")
     
     def start(self):
         self.proc = Process(target=self._start_process, daemon=True)
         self.proc.start()
+    
+    def get_status(self):
+        return self._status.value
 
     def _start_process(self):
         log_name = os.environ.get("LOG_NAME", "log1681421163.731945.log")
@@ -31,9 +35,11 @@ class Data:
             with open(path_to_file, open_mode) as f:
                 if not stream_flag:
                     logger.info("start parsing file")
+                    self._status.set("Parsing")
                 _data = ijson.items(f, "data.item") if stream_flag else json.load(f)
                 if not stream_flag:
                     logger.info("done parsing file")
+                    self._status.set("Streaming")
                 for data in _data:
                     self.data.set(data)
                     sleep(0.05)
@@ -43,8 +49,10 @@ class Data:
         except Exception as e:
             logger.info("There was an error")
             logger.info(e)
+            self._status.set("Error")
             return -1
         self.stop_sig.set(False)
+        self._status.set("Done streaming")
         return 0
 
     def get_data(self):
@@ -58,7 +66,10 @@ app = Flask(__name__)
 
 @app.route("/")
 def main():
-    return data.get_data()
+    return {
+        "status": data.get_status(),
+        **data.get_data()
+    }
 
 @app.route("/start")
 def start_process():
