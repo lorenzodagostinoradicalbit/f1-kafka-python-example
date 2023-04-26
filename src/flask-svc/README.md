@@ -28,4 +28,5 @@ Simply run `docker build -t <name> .`
 Once builded you should give it a tag like the following:
 ```bash
 docker tag <name> gcr.io/<gc-project-name>/<name>
+docker push gcr.io/<gc-project-name>/<name>
 ```
