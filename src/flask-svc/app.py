@@ -40,9 +40,9 @@ class Data:
                     _data = json.load(f)
                     _data = _data['data']
                     logger.info("done parsing file")
-                    self._status.set("Streaming")
                 else:
                     _data = ijson.items(f, "data.item") if stream_flag else json.load(f)
+                self._status.set("Streaming")
                 for data in _data:
                     self.data.set(data)
                     sleep(0.05)
