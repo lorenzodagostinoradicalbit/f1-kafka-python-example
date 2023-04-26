@@ -62,6 +62,7 @@ class Data:
         return self.data.value
     
     def stop(self):
+        self._status.set("Stopped")
         self.stop_sig.set(True)
         self.data.set(self.init_data)
 
