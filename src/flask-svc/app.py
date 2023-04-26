@@ -33,13 +33,16 @@ class Data:
             stream_flag = stream_env.lower() in ("true", "1", "t") # Allow values like True, true, 1, ...
             open_mode = "rb" if stream_flag else "r"
             with open(path_to_file, open_mode) as f:
+                data = None
                 if not stream_flag:
                     logger.info("start parsing file")
                     self._status.set("Parsing")
-                _data = ijson.items(f, "data.item") if stream_flag else json.load(f)
-                if not stream_flag:
+                    _data = json.load(f)
+                    _data = _data['data']
                     logger.info("done parsing file")
                     self._status.set("Streaming")
+                else:
+                    _data = ijson.items(f, "data.item") if stream_flag else json.load(f)
                 for data in _data:
                     self.data.set(data)
                     sleep(0.05)
