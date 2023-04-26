@@ -31,12 +31,12 @@ class Data:
             with open(path_to_file, open_mode) as f:
                 if not stream_flag:
                     logger.info("start parsing file")
-                data = ijson.items(f, "data.item") if stream_flag else json.load(f)
+                _data = ijson.items(f, "data.item") if stream_flag else json.load(f)
                 if not stream_flag:
                     logger.info("done parsing file")
-                for data in ijson.items(f, "data.item"):
+                for data in _data:
                     self.data.set(data)
-                    sleep(0.05)
+                    sleep(1)
                     if self.stop_sig.value:
                         logger.info("stopped")
                         break
