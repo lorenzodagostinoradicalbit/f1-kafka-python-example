@@ -6,6 +6,7 @@ import json
 from sim_logging import get_logger
 import ctypes
 import os
+import re
 
 logger = get_logger()
 
